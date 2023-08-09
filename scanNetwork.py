@@ -52,7 +52,7 @@ class ScanNetwork:
                 print(f"[{index}] {ip}: Null")
 
     def inital_port(self, ip):
-        common_ports = [21, 22, 23, 25, 53, 80, 110, 143, 443, 465, 587, 993, 995, 3389, 5900, 8080, 9100]
+        common_ports = [21, 22, 23, 25, 53, 80, 110, 135, 143, 443, 465, 587, 993, 995, 3389, 5900, 8080, 9100]
         print("\n Starting Common Ports Scanning... \n")
         for port in common_ports:
             scan = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
