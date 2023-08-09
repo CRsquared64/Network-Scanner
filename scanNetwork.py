@@ -52,7 +52,7 @@ class ScanNetwork:
                 print(f"[{index}] {ip}: Null")
 
     def inital_port(self, ip):
-        common_ports = [21, 22, 23, 25, 53, 80, 110, 135, 143, 443, 465, 587, 993, 995, 3389, 5900, 8080, 9100]
+        common_ports = [21, 22, 23, 25, 53, 80, 81, 110, 135, 143, 443, 465, 587, 993, 995, 3389, 5900, 8080, 9100]
         print("\n Starting Common Ports Scanning... \n")
         for port in common_ports:
             scan = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -98,11 +98,35 @@ class ScanNetwork:
             self.open_ports.extend(self.open_queue.get())
         print(self.open_ports)
 
+    def detect_printers_worker(self, ips):
+        for ip in ips:
+            scan = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            dest = (f"{ip}", 9100)
+            check = scan.connect_ex(dest)
+            if check == 0:
+                print(f"{ip}: Valid Printer Found!")
+            else:
+                pass
+            scan.close()
+    def detect_printers(self):
+        ips = np.array_split(self.active, self.parts)
+        processes = []
+        print("\n Scanning For Network Printers... \n")
+        for i in range(self.parts):
+            p = Process(target=self.detect_printers_worker, args=(ips[i],))
+            p.start()
+            processes.append(p)
+        for p in processes:
+            p.join()
+
+
+
     def main_loop(self, ip):
         text = """
         What Process Would You Like To Run:
         [1] Full Port Scan
         [2] Limited DOS attack
+        [3] Find Network Printers
         """
         valid_answers = [1, 2]
         print(f"\n Currently Selected IP: {ip}\n")
@@ -117,6 +141,8 @@ class ScanNetwork:
                     self.full_port_scan(ip, min_port, max_port)
                 elif ans == 2:
                     pass
+                elif ans == 3:
+                    self.detect_printers()
             else:
                 print("Attack Not In Range, please try again")
 
